@@ -3,6 +3,7 @@ from pitch import Pitch
 PASS='-'
 LOW='.'
 HIGH='\''
+LONG='~'
 
 class Parser():
 	"""docstring for Parser."""
@@ -17,26 +18,48 @@ class Parser():
 
 	def parse(self):
 		notes = list()
+		tempoFactors = list()
 		pitch = Pitch()
 		symbols = self.file.read().split()
 		for symbol in symbols:
 			try:
 				offset = 0
 				length = len(symbol)
+				tempoFactor = 1
 				if length > 1:
 					note = symbol[0]
-					offset = length - 1
-					if symbol[1] == LOW:
-						offset = -1 * offset
+
+					for i in range(2, length):
+						if symbol[i] != symbol[1]:
+							print("[ERROR] Syntax Error:", symbol)
+							exit()
+
+					if symbol[1] == HIGH:
+						offset = length - 1
+					elif symbol[1] == LOW:
+						offset = -1 * (length - 1)
+					elif symbol[1] == LONG:
+						tempoFactor = length
+					else:
+						print("[ERROR] Syntax Error:", symbol)
+						exit()
 				else:
 					if symbol == PASS:
+						tempoFactors.append(1)
 						notes.append(0)
 						continue
 					else:
 						note = symbol
 
-				notes.append(pitch.getPitch(note, offset))
+				try:
+					val = pitch.getPitch(note, offset)
+				except Exception as e:
+					print("[ERROR] Syntax Error:", symbol)
+					exit()
+
+				notes.append(val)
+				tempoFactors.append(tempoFactor)
 			except Exception as e:
-				print("[ERROR] Syntax Error", e)
+				print("[ERROR] Syntax Error:", e)
 				exit()
-		return notes
+		return notes, tempoFactors

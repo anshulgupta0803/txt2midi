@@ -1,36 +1,54 @@
 #!/usr/bin/python3.5
 
-#Import the library
 from midiutil.MidiFile import MIDIFile
-from parse import Parser
+from track import Track
 import sys
 
-# Create the MIDIFile Object with 1 track
-MyMIDI = MIDIFile(1)
+compositionName = input("Name of the song: ")
+# tracks = input("Number of tracks [1]: ")
+tracks = len(sys.argv) - 1
 
-# Tracks are numbered from zero. Times are measured in beats.
-track = 0
-time = 0
+# Set default tracks
+if tracks == "":
+	tracks = 1
+try:
+	tracks = int(tracks)
+except Exception as e:
+	print("[ERROR] Number of tracks must be an integer")
+	exit()
 
-MyMIDI.addTrackName(track, time, "Raag Bhoopali")
-MyMIDI.addTempo(track, time, 240)
+# Create the MIDIFile Object with number of tracks
+MIDI = MIDIFile(tracks)
 
-# Creates parser and parses the input file
-parser = Parser()
-parser.open(sys.argv[1])
-parsedData = parser.parse()
-parser.close()
+for i in range(tracks):
+	channel = 0
+	volume = 127
+	duration = 1
+	tempo = input("Tempo for Track " + str(i) + " [240]: ")
+	# Set default tempo
+	if tempo == "":
+		tempo = 240
+	try:
+		tempo = int(tempo)
+	except Exception as e:
+		print("[ERROR] Tempo must be an integer")
+		exit()
 
-track = 0
-channel = 0
-volume = 100
-time = 0
-duration = 1
+	# Initialize the track
+	channel = 0
+	volume = 127
+	duration = 1
+	track = Track(i, channel, volume, duration, tempo)
+	MIDI.addTrackName(track.id, 0, compositionName)
+	track.parse(sys.argv[i + 1])
 
-for pitch in parsedData:
-	MyMIDI.addNote(track, channel, pitch, time, duration, volume)
-	time += 1
+	# Add all the nodes to the track
+	length = len(track.note)
+	for time in range(length):
+		MIDI.addTempo(track.id, time, track.tempo / track.tempoFactor[time])
+		MIDI.addNote(track.id, track.channel, track.note[time], time, track.duration, track.volume)
 
-binfile = open("bhoopali.mid", 'wb')
-MyMIDI.writeFile(binfile)
-binfile.close()
+# Write MIDI output to file
+outfile = open(compositionName + ".mid", 'wb')
+MIDI.writeFile(outfile)
+outfile.close()
