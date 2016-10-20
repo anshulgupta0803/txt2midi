@@ -1,4 +1,0 @@
-S' S' D P G R S R G - P G D P G -
-G P D S' R' S' D P S' P D P G R S -
-G G P D P S' S' D D S' R' G' R' S' D -
-G' G' R' S' R' R' S' D S' S' D P G R S
