@@ -1,3 +1,5 @@
+#!/usr/bin/python3.5
+
 from parse import Parser
 
 class Track():

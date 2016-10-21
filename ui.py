@@ -1,3 +1,5 @@
+#!/usr/bin/python3.5
+
 import tkinter as tk
 from tkinter import font
 from tkinter import filedialog
