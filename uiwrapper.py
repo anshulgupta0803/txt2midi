@@ -67,6 +67,7 @@ class UiWrapper:
 		self.__ui.pan_status.lbl_msg["text"]="Success: "+msg;
 		self.__ui.pan_status.lbl_msg.config(fg=self.__ui.color_green);
 		self.__ui.pan_status.btn_play.show()
+		self.__ui.pan_status.btn_stop.show()
 
 	'''
 	--------------------------------------------------------------------------------
@@ -78,6 +79,7 @@ class UiWrapper:
 		self.__ui.pan_status.lbl_msg["text"]="Error: "+msg;
 		self.__ui.pan_status.lbl_msg.config(fg=self.__ui.color_red);
 		self.__ui.pan_status.btn_play.hide()
+		self.__ui.pan_status.btn_stop.hide()
 
 
 	'''
@@ -98,15 +100,11 @@ class UiWrapper:
 	'''
 	def bindConvertOnClick(self,lamda_fun_handler):
 		self.__ui.st_btn_convert_funhandler=lamda_fun_handler;
+
 def prt(obj):
 	print("o/p:"+obj.getOutputFolder());
 	print("inst:"+obj.setInstrument());
 	print("src:"+obj.getSrcFullFileName());
 	print("track:"+obj.getTrackName());
-	obj.setSucessMsg("File Converted Success fully.");
-	obj.setErrorMsg("Failed in converting");
-
-wrapper=UiWrapper();
-wrapper.renderUI();
-wrapper.bindConvertOnClick(lambda:prt(wrapper));
-wrapper.showUI();
+	obj.setSucessMsg("File Converted Successfully.");
+	obj.setErrorMsg("Error while converting");

@@ -33,8 +33,7 @@ class Parser():
 
 					for i in range(2, length):
 						if symbol[i] != symbol[1]:
-							print("[ERROR] Syntax Error:", symbol)
-							exit()
+							raise ValueError("Syntax Error: " + symbol)
 
 					if symbol[1] == HIGH:
 						offset = length - 1
@@ -43,8 +42,7 @@ class Parser():
 					elif symbol[1] == LONG:
 						tempoFactor = length
 					else:
-						print("[ERROR] Syntax Error:", symbol)
-						exit()
+						raise ValueError("Syntax Error: " + symbol)
 				else:
 					if symbol == PASS:
 						tempoFactors.append(1)
@@ -56,12 +54,10 @@ class Parser():
 				try:
 					val = pitch.getPitch(note, offset)
 				except Exception as e:
-					print("[ERROR] Syntax Error:", symbol)
-					exit()
+					raise ValueError("Syntax Error: " + symbol)
 
 				notes.append(val)
 				tempoFactors.append(tempoFactor)
 			except Exception as e:
-				print("[ERROR] Syntax Error:", e)
-				exit()
+				raise ValueError("Syntax Error: " + symbol)
 		return notes, tempoFactors
