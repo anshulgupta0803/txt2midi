@@ -2,6 +2,15 @@
 	"$schema": "http://json-schema.org/draft-04/schema#",
 	"type": "object",
 	"properties": {
+		"tempo": {
+			"type": "integer",
+			"multipleOf": 1,
+			"maximum": 10000,
+			"minimum": 1,
+			"exclusiveMaximum": false,
+			"exclusiveMinimum": false,
+			"default": 240
+		},
 		"tracks": {
 			"type": "array",
 			"uniqueItems": false,
@@ -155,15 +164,6 @@
 						"minLength": 1,
 						"default": "S",
 						"pattern": "^[SrRgGmMPdDnN]\\.*$|^[SrRgGmMPdDnN]'*$"
-					},
-					"tempo": {
-						"type": "integer",
-						"multipleOf": 1,
-						"maximum": 10000,
-						"minimum": 1,
-						"exclusiveMaximum": false,
-						"exclusiveMinimum": false,
-						"default": 240
 					},
 					"volume": {
 						"type": "integer",

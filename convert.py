@@ -17,7 +17,7 @@ def convert(ui):
 	try:
 		validate(data, schema)
 	except Exception as e:
-		ui.setErrorMsg(str(e))
+		ui.setErrorMsg(str(e).split("\n")[0])
 		return
 
 	# Create the MIDIFile Object with number of tracks
@@ -28,14 +28,29 @@ def convert(ui):
 
 	for i in range(tracks):
 		try:
+			instrument = data["tracks"][i]["instrument"]
+		except Exception as e:
+			instrument = "Acoustic Grand Piano"
+
+		try:
 			volume = data["tracks"][i]["volume"]
 		except Exception as e:
 			volume = 127
 
 		try:
-			tempo = data["tracks"][i]["tempo"]
+			tempo = data["tempo"]
 		except Exception as e:
 			tempo = 240
+
+		try:
+			baseOffset = data["tracks"][i]["baseOffset"]
+		except Exception as e:
+			baseOffset = "S"
+
+		try:
+			loop = data["tracks"][i]["loop"]
+		except Exception as e:
+			loop = 1
 
 		# Initialize the track
 		track = i
@@ -44,20 +59,23 @@ def convert(ui):
 		time = 0
 
 		track = Track(track, channel, volume, duration, tempo)
-		MIDI.addTrackName(track.id, time, data["tracks"][i]["instrument"])
-		MIDI.addProgramChange(track.id, track.channel, time, instruments[data["tracks"][i]["instrument"]])
+		MIDI.addTrackName(track.id, time, instrument)
+		MIDI.addProgramChange(track.id, track.channel, time, instruments[instrument])
 
 		try:
-			track.parse(data["tracks"][i]["notes"])
+			track.parse(data["tracks"][i]["notes"], baseOffset)
 		except ValueError as e:
 			ui.setErrorMsg(str(e))
 			return
 
 		# Add all the nodes to the track
+		time = 0
 		length = len(track.note)
-		for time in range(length):
-			MIDI.addTempo(track.id, time, track.tempo / track.tempoFactor[time])
-			MIDI.addNote(track.id, track.channel, track.note[time], time, track.duration, track.volume)
+		for times in range(loop):
+			for currentBeat in range(length):
+				MIDI.addTempo(track.id, time, track.tempo / track.tempoFactor[currentBeat])
+				MIDI.addNote(track.id, track.channel, track.note[currentBeat], time, track.duration, track.volume)
+				time += 1
 
 	# Write MIDI output to file
 	outfile = open(ui.getOutputFolder() + compositionName + ".mid", 'wb')
