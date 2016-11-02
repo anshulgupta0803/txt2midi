@@ -13,9 +13,7 @@ class Track():
 		self.note = None
 		self.tempoFactor = None
 
-	def parse(self, fname):
+	def parse(self, symbols):
 		# Creates parser and parses the input file
 		parser = Parser()
-		parser.open(fname)
-		self.note, self.tempoFactor = parser.parse()
-		parser.close()
+		self.note, self.tempoFactor = parser.parse(symbols)

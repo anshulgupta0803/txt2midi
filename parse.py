@@ -10,19 +10,13 @@ LONG='~'
 class Parser():
 	"""docstring for Parser."""
 	def __init__(self):
-		self.file = None
+		pass
 
-	def open(self, fname):
-		self.file = open(fname, "r")
-
-	def close(self):
-		self.file.close()
-
-	def parse(self):
+	def parse(self, symbols):
 		notes = list()
 		tempoFactors = list()
 		pitch = Pitch()
-		symbols = self.file.read().split()
+		symbols = symbols.split()
 		for symbol in symbols:
 			try:
 				offset = 0

@@ -4,48 +4,51 @@ from uiwrapper import *
 from midiutil.MidiFile import MIDIFile
 from track import Track
 from instruments import *
+from json import load
+from jsonschema import validate
 
 def convert(ui):
-	compositionName = ui.getTrackName()
-	# tracks = input("Number of tracks [1]: ")
-	tracks = 1#len(sys.argv) - 1
+	with open(ui.getSrcFullFileName()) as dataFile:
+		data = load(dataFile)
 
-	# Set default tracks
-	if tracks == "":
-		tracks = 1
+	with open('schema.json') as schemaFile:
+		schema = load(schemaFile)
+
 	try:
-		tracks = int(tracks)
+		validate(data, schema)
 	except Exception as e:
-		print("[ERROR] Number of tracks must be an integer")
-		exit()
+		ui.setErrorMsg(str(e))
+		return
 
 	# Create the MIDIFile Object with number of tracks
-	MIDI = MIDIFile(tracks)
+	tracks = len(data["tracks"])
+	MIDI = MIDIFile(numTracks=tracks)
+
+	compositionName = ui.getTrackName()
 
 	for i in range(tracks):
-		channel = 0
-		volume = 127
-		duration = 1
-		tempo = "" #input("Tempo for Track " + str(i) + " [240]: ")
-		# Set default tempo
-		if tempo == "":
-			tempo = 240
 		try:
-			tempo = int(tempo)
+			volume = data["tracks"][i]["volume"]
 		except Exception as e:
-			print("[ERROR] Tempo must be an integer")
-			exit()
+			volume = 127
+
+		try:
+			tempo = data["tracks"][i]["tempo"]
+		except Exception as e:
+			tempo = 240
 
 		# Initialize the track
-		channel = 0
-		volume = 127
+		track = i
+		channel = i
 		duration = 1
-		track = Track(i, channel, volume, duration, tempo)
-		MIDI.addTrackName(track.id, 0, compositionName)
-		MIDI.addProgramChange(track.id, track.channel, 0, instruments[ui.setInstrument()])
+		time = 0
+
+		track = Track(track, channel, volume, duration, tempo)
+		MIDI.addTrackName(track.id, time, data["tracks"][i]["instrument"])
+		MIDI.addProgramChange(track.id, track.channel, time, instruments[data["tracks"][i]["instrument"]])
 
 		try:
-			track.parse(ui.getSrcFullFileName())
+			track.parse(data["tracks"][i]["notes"])
 		except ValueError as e:
 			ui.setErrorMsg(str(e))
 			return

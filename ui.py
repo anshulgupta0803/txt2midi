@@ -260,7 +260,7 @@ class UiApplication(tk.Frame):
 	--------------------------------------------------------------------------------
 	'''
 	def onClickSrcFileBrowse(self):
-		filefullname = filedialog.askopenfilename(filetypes = (("Text file", "*.txt"),("All files", "*.*") ));
+		filefullname = filedialog.askopenfilename(filetypes = (("JSON file", "*.json"),("All files", "*.*") ));
 		self.pan_single_track.txt_src_file_txtvar.set(filefullname);
 		self.pan_single_track.txt_src_file.focus()
 		self.pan_single_track.txt_src_file.xview_moveto(1)
