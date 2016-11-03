@@ -4,74 +4,95 @@ from uiwrapper import *
 from midiutil.MidiFile import MIDIFile
 from track import Track
 from instruments import *
-import os
-def convert(ui):
-	compositionName = ui.getTrackName()
-	# tracks = input("Number of tracks [1]: ")
-	tracks = 1#len(sys.argv) - 1
+from json import load
+from jsonschema import validate
 
-	# Set default tracks
-	if tracks == "":
-		tracks = 1
+def convert(ui):
+	with open(ui.getSrcFullFileName()) as dataFile:
+		data = load(dataFile)
+
+	with open('schema.json') as schemaFile:
+		schema = load(schemaFile)
+
 	try:
-		tracks = int(tracks)
+		validate(data, schema)
 	except Exception as e:
-		print("[ERROR] Number of tracks must be an integer")
-		exit()
+		ui.setErrorMsg(str(e).split("\n")[0])
+		return
 
 	# Create the MIDIFile Object with number of tracks
-	MIDI = MIDIFile(tracks)
+	tracks = len(data["tracks"])
+	MIDI = MIDIFile(numTracks=tracks)
+
+	compositionName = ui.getTrackName()
 
 	for i in range(tracks):
-		channel = 0
-		volume = 127
-		duration = 1
-		tempo = "" #input("Tempo for Track " + str(i) + " [240]: ")
-		# Set default tempo
-		if tempo == "":
-			tempo = 240
 		try:
-			tempo = int(tempo)
+			instrument = data["tracks"][i]["instrument"]
 		except Exception as e:
-			print("[ERROR] Tempo must be an integer")
-			exit()
+			instrument = "Acoustic Grand Piano"
+
+		try:
+			volume = data["tracks"][i]["volume"]
+		except Exception as e:
+			volume = 127
+
+		try:
+			tempo = data["tempo"]
+		except Exception as e:
+			tempo = 240
+
+		try:
+			baseOffset = data["tracks"][i]["baseOffset"]
+		except Exception as e:
+			baseOffset = "S"
+
+		try:
+			loop = data["tracks"][i]["loop"]
+		except Exception as e:
+			loop = 1
 
 		# Initialize the track
-		channel = 0
-		volume = 127
+		track = i
+		channel = i
 		duration = 1
-		track = Track(i, channel, volume, duration, tempo)
-		MIDI.addTrackName(track.id, 0, compositionName)
-		MIDI.addProgramChange(track.id, track.channel, 0, instruments[ui.setInstrument()])
+		time = 0
+
+		track = Track(track, channel, volume, duration, tempo)
+		MIDI.addTrackName(track.id, time, instrument)
+		MIDI.addProgramChange(track.id, track.channel, time, instruments[instrument])
 
 		try:
-			track.parse(ui.getSrcFullFileName())
+			track.parse(data["tracks"][i]["notes"], baseOffset)
 		except ValueError as e:
 			ui.setErrorMsg(str(e))
 			return None
 
 		# Add all the nodes to the track
+		time = 0
 		length = len(track.note)
-		for time in range(length):
-			MIDI.addTempo(track.id, time, track.tempo / track.tempoFactor[time])
-			MIDI.addNote(track.id, track.channel, track.note[time], time, track.duration, track.volume)
+		for times in range(loop):
+			for currentBeat in range(length):
+				MIDI.addTempo(track.id, time, track.tempo / track.tempoFactor[currentBeat])
+				MIDI.addNote(track.id, track.channel, track.note[currentBeat], time, track.duration, track.volume)
+				time += 1
 
 	# Write MIDI output to file
 	outfile = open(ui.getOutputFolder() + compositionName + ".mid", 'wb')
 	MIDI.writeFile(outfile)
-	outfile.close();
+	outfile.close()
 	#converting .mid to wav file
 	converMidToWav(compositionName);
 	#deleting mid file
-	delFile(compositionName+".mid");
+	delFile(compositionName+".mid")
 	ui.setSucessMsg("File Successfully Converted")
-	return compositionName+".wav";
+	return compositionName+".wav"
 
 def converMidToWav(mid_filename):
 	os.system("timidity -Ow -o "+mid_filename+".wav "+mid_filename+".mid")
 
 def delFile(filename):
-	os.system("rm "+filename);
+os.system("rm "+filename)
 
 if __name__ == '__main__':
 	ui=UiWrapper();
