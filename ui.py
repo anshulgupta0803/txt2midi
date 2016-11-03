@@ -1,6 +1,8 @@
 #!/usr/bin/python3.5
 
 import tkinter as tk
+import pygame
+import time
 from tkinter import font
 from tkinter import filedialog
 import os
@@ -235,12 +237,13 @@ class UiApplication(tk.Frame):
 		#col1 : play button
 		panel.btn_play = tk.Button(panel,bg=self.success_bg_color,cursor="arrow")
 		panel.btn_play.config(font=self.font_courier18);
-		panel.btn_play["text"] = u'\u23EF';
+		panel.btn_play["text"] = u'\u23F5';
 		panel.btn_play["command"]=self.onClickPlay;
 		panel.btn_play.place(x=20,y=y_offset+((f_y_inc*row)),height=45, width=45)
 
 		panel.btn_play.show=(lambda:self.UiOp.showWidget(panel.btn_play));
 		panel.btn_play.hide=(lambda:self.UiOp.hideWidget(panel.btn_play));
+		panel.btn_play.hide();
 
 		#col1 : stop button
 		panel.btn_stop = tk.Button(panel,bg=self.danger_bg_color,cursor="arrow")
@@ -251,7 +254,19 @@ class UiApplication(tk.Frame):
 
 		panel.btn_stop.show=(lambda:self.UiOp.showWidget(panel.btn_stop));
 		panel.btn_stop.hide=(lambda:self.UiOp.hideWidget(panel.btn_stop));
+		panel.btn_stop.hide();
 
+	'''
+	--------------------------------------------------------------------------------
+		Desc: Init mixer for the wave file for palying the file.	
+	--------------------------------------------------------------------------------
+	'''
+	def intiWaveSound(self,wavefile):
+		pygame.init();
+		pygame.filename=wavefile;
+		pygame.mixer.music.load(wavefile);
+		pygame.is_playing=False;
+		pygame.is_paused=False;
 
 	'''
 	--------------------------------------------------------------------------------
@@ -260,7 +275,10 @@ class UiApplication(tk.Frame):
 	--------------------------------------------------------------------------------
 	'''
 	def onClickSrcFileBrowse(self):
-		filefullname = filedialog.askopenfilename(filetypes = (("JSON file", "*.json"),("All files", "*.*") ));
+		filefullname = filedialog.askopenfilename(filetypes = (("Text file", "*.txt"),("All files", "*.*") ));
+		if (len(filefullname)==0):
+			return None;
+	
 		self.pan_single_track.txt_src_file_txtvar.set(filefullname);
 		self.pan_single_track.txt_src_file.focus()
 		self.pan_single_track.txt_src_file.xview_moveto(1)
@@ -277,7 +295,9 @@ class UiApplication(tk.Frame):
 	--------------------------------------------------------------------------------
 	'''
 	def onClickDstFileBrowse(self):
-		filename = filedialog.askdirectory();
+		filename = filedialog.askdirectory();	
+		if (len(filename)==0):
+			return None;			
 		self.pan_single_track.txt_dst_file_txtvar.set(filename);
 	'''
 	--------------------------------------------------------------------------------
@@ -286,7 +306,12 @@ class UiApplication(tk.Frame):
 	'''
 	def onClickConvert(self):
 		if(self.st_btn_convert_funhandler!=None):
-			self.st_btn_convert_funhandler();
+			wavefile=self.st_btn_convert_funhandler();
+			if(wavefile!=None or wavefile!=''):			
+				self.intiWaveSound(wavefile);
+				self.pan_status.btn_play["text"] = u'\u23F5';
+
+				
 
 	'''
 	--------------------------------------------------------------------------------
@@ -294,19 +319,34 @@ class UiApplication(tk.Frame):
 	--------------------------------------------------------------------------------
 	'''
 	def onClickPlay(self):
-		if(self.status_btn_play_funhandler!=None):
-			self.status_btn_play_funhandler();
-
+		if(hasattr(pygame, "is_playing") and pygame.is_playing==False and pygame.is_paused == False):
+			pygame.mixer.music.play();
+			pygame.is_playing=True;
+			pygame.is_paused=False;
+			self.pan_status.btn_play["text"] = u'\u23F8';
+		elif(hasattr(pygame, "is_playing") and pygame.is_playing==True and pygame.is_paused == False):
+			pygame.mixer.music.pause();
+			pygame.is_playing=False;
+			pygame.is_paused = True;
+			self.pan_status.btn_play["text"] = u'\u23F5';
+		elif(hasattr(pygame, "is_playing") and pygame.is_playing==False and pygame.is_paused == True):
+			pygame.mixer.music.unpause();
+			pygame.is_playing=True;
+			pygame.is_paused = False;
+			self.pan_status.btn_play["text"] = u'\u23F8';		
+		
 	'''
 	--------------------------------------------------------------------------------
 		Desc: On Click for Stop
 	--------------------------------------------------------------------------------
 	'''
 	def onClickStop(self):
-		if(self.status_btn_play_funhandler!=None):
-			self.status_btn_play_funhandler();
-
+		if(hasattr(pygame, "is_playing")):
+			pygame.mixer.music.stop();
+			self.intiWaveSound(pygame.filename);
+			self.pan_status.btn_play["text"] = u'\u23F5';
 if(__name__=="__main__"):
 	root = tk.Tk()
 	app = UiApplication(master=root)
 	app.mainloop()
+

@@ -13,8 +13,9 @@ class CommonUIOperation:
 	--------------------------------------------------------------------------------
 	'''
 	def hideWidget(self,widget):
-		widget.pi = widget.place_info()
-		widget.place_forget();
+		if (not hasattr(widget, 'pi') or widget.pi==None):
+			widget.pi = widget.place_info();
+			widget.place_forget();
 
 	'''
 	--------------------------------------------------------------------------------
@@ -24,3 +25,4 @@ class CommonUIOperation:
 	def showWidget(self,widget):
 		if hasattr(widget, 'pi'):
 			widget.place(widget.pi);
+			widget.pi=None;
