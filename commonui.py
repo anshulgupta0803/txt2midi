@@ -23,6 +23,6 @@ class CommonUIOperation:
 	--------------------------------------------------------------------------------
 	'''
 	def showWidget(self,widget):
-		if hasattr(widget, 'pi'):
+		if hasattr(widget, 'pi') and widget.pi!=None:
 			widget.place(widget.pi);
 			widget.pi=None;

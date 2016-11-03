@@ -16,7 +16,7 @@ class UiApplication(tk.Frame):
 	UiOp=CommonUIOperation();
 	#Windows Properties
 	window_width=800;
-	window_height=600;
+	window_height=525;
 	window_xpos=500;
 	window_ypos=0;
 
@@ -72,7 +72,7 @@ class UiApplication(tk.Frame):
 	def createPanel(self):
 
 		# Panel 1 : Single Track
-		st_panel_height=400;
+		st_panel_height=325;
 		self.pan_single_track = tk.PanedWindow(self, orient=tk.VERTICAL,
 							bd=self.border_width,
 							width=self.panel_width,
@@ -126,7 +126,7 @@ class UiApplication(tk.Frame):
 		#col 1 : label
 		panel.lbl_src = tk.Label(panel, text="Source file : ",bg=panel.panel_bg_color)
 		panel.lbl_src.config(font=self.font_courier18,fg=panel.panel_text_color);
-		panel.lbl_src.place(x=70, y=y_offset)
+		panel.lbl_src.place(x=65, y=y_offset)
 
 		#col 2 :text
 		panel.txt_src_file_txtvar = tk.StringVar()
@@ -176,21 +176,6 @@ class UiApplication(tk.Frame):
 
 		#-----------------------------------[row 4]----------------------------------------------
 		row+=1;
-		#col1 : label
-		panel.lbl_inst = tk.Label(panel, text="Instrument : ",bg=panel.panel_bg_color)
-		panel.lbl_inst.config(font=self.font_courier18,fg=panel.panel_text_color);
-		panel.lbl_inst.place(x=68, y=y_offset+(f_y_inc*row))
-
-		#col2 : txt
-		panel.opt_inst_txtvar= tk.StringVar(panel);
-		panel.opt_inst_txtvar.set("Acoustic Grand Piano") # default value
-		panel.opt_inst= tk.OptionMenu(panel, panel.opt_inst_txtvar, "Acoustic Grand Piano", "Acoustic Guitar (steel)", "Violin", "Flute")
-		panel.opt_inst.config(font=self.font_courier18,fg="green",indicatoron = True);
-		panel.opt_inst.nametowidget(panel.opt_inst.menuname).config(font=self.font_courier18)
-		panel.opt_inst.place(x=f_x,y=y_offset+((f_y_inc*row)),height=f_height, width=f_width);
-
-		#-----------------------------------[row 5]----------------------------------------------
-		row+=1;
 		#col1 : button
 		panel.btn_parase = tk.Button(panel,bg=self.success_bg_color,cursor="arrow")
 		panel.btn_parase.config(font=self.font_courier18);
@@ -237,7 +222,7 @@ class UiApplication(tk.Frame):
 		#col1 : play button
 		panel.btn_play = tk.Button(panel,bg=self.success_bg_color,cursor="arrow")
 		panel.btn_play.config(font=self.font_courier18);
-		panel.btn_play["text"] = u'\u23F5';
+		panel.btn_play["text"] = u'\u25B6';
 		panel.btn_play["command"]=self.onClickPlay;
 		panel.btn_play.place(x=20,y=y_offset+((f_y_inc*row)),height=45, width=45)
 
@@ -258,7 +243,7 @@ class UiApplication(tk.Frame):
 
 	'''
 	--------------------------------------------------------------------------------
-		Desc: Init mixer for the wave file for palying the file.	
+		Desc: Init mixer for the wave file for palying the file.
 	--------------------------------------------------------------------------------
 	'''
 	def intiWaveSound(self,wavefile):
@@ -275,10 +260,10 @@ class UiApplication(tk.Frame):
 	--------------------------------------------------------------------------------
 	'''
 	def onClickSrcFileBrowse(self):
-		filefullname = filedialog.askopenfilename(filetypes = (("Text file", "*.txt"),("All files", "*.*") ));
+		filefullname = filedialog.askopenfilename(filetypes = (("JSON file", "*.json"),("All files", "*.*") ));
 		if (len(filefullname)==0):
 			return None;
-	
+
 		self.pan_single_track.txt_src_file_txtvar.set(filefullname);
 		self.pan_single_track.txt_src_file.focus()
 		self.pan_single_track.txt_src_file.xview_moveto(1)
@@ -288,6 +273,7 @@ class UiApplication(tk.Frame):
 		index_of_dot = os.path.basename(filename).index('.')
 		filename_without_extension = filename[:index_of_dot]
 		self.pan_single_track.txt_trackname_txtvar.set(filename_without_extension)
+
 	'''
 	--------------------------------------------------------------------------------
 		Desc: Setting the folder of o/p file in text field
@@ -295,10 +281,11 @@ class UiApplication(tk.Frame):
 	--------------------------------------------------------------------------------
 	'''
 	def onClickDstFileBrowse(self):
-		filename = filedialog.askdirectory();	
+		filename = filedialog.askdirectory();
 		if (len(filename)==0):
-			return None;			
+			return None;
 		self.pan_single_track.txt_dst_file_txtvar.set(filename);
+
 	'''
 	--------------------------------------------------------------------------------
 		Desc: On Click for Convert function
@@ -307,11 +294,9 @@ class UiApplication(tk.Frame):
 	def onClickConvert(self):
 		if(self.st_btn_convert_funhandler!=None):
 			wavefile=self.st_btn_convert_funhandler();
-			if(wavefile!=None or wavefile!=''):			
+			if(wavefile!=None or wavefile!=''):
 				self.intiWaveSound(wavefile);
-				self.pan_status.btn_play["text"] = u'\u23F5';
-
-				
+				self.pan_status.btn_play["text"] = u'\u25B6';
 
 	'''
 	--------------------------------------------------------------------------------
@@ -328,13 +313,13 @@ class UiApplication(tk.Frame):
 			pygame.mixer.music.pause();
 			pygame.is_playing=False;
 			pygame.is_paused = True;
-			self.pan_status.btn_play["text"] = u'\u23F5';
+			self.pan_status.btn_play["text"] = u'\u25B6';
 		elif(hasattr(pygame, "is_playing") and pygame.is_playing==False and pygame.is_paused == True):
 			pygame.mixer.music.unpause();
 			pygame.is_playing=True;
 			pygame.is_paused = False;
-			self.pan_status.btn_play["text"] = u'\u23F8';		
-		
+			self.pan_status.btn_play["text"] = u'\u23F8';
+
 	'''
 	--------------------------------------------------------------------------------
 		Desc: On Click for Stop
@@ -344,9 +329,9 @@ class UiApplication(tk.Frame):
 		if(hasattr(pygame, "is_playing")):
 			pygame.mixer.music.stop();
 			self.intiWaveSound(pygame.filename);
-			self.pan_status.btn_play["text"] = u'\u23F5';
+			self.pan_status.btn_play["text"] = u'\u25B6';
+
 if(__name__=="__main__"):
 	root = tk.Tk()
 	app = UiApplication(master=root)
 	app.mainloop()
-

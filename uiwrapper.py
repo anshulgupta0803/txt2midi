@@ -49,16 +49,6 @@ class UiWrapper:
 
 	'''
 	--------------------------------------------------------------------------------
-		[Single Track]
-		Desc: Gives the instrument name entered by user
-		Return: (string) instrument name
-	--------------------------------------------------------------------------------
-	'''
-	def setInstrument(self):
-		return self.__ui.pan_single_track.opt_inst_txtvar.get();
-
-	'''
-	--------------------------------------------------------------------------------
 		[All Track]
 		Desc: Set the success msg
 	--------------------------------------------------------------------------------
@@ -100,11 +90,3 @@ class UiWrapper:
 	'''
 	def bindConvertOnClick(self,lamda_fun_handler):
 		self.__ui.st_btn_convert_funhandler=lamda_fun_handler;
-
-def prt(obj):
-	print("o/p:"+obj.getOutputFolder());
-	print("inst:"+obj.setInstrument());
-	print("src:"+obj.getSrcFullFileName());
-	print("track:"+obj.getTrackName());
-	obj.setSucessMsg("File Converted Successfully.");
-	obj.setErrorMsg("Error while converting");

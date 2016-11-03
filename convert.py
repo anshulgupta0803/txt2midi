@@ -6,6 +6,7 @@ from track import Track
 from instruments import *
 from json import load
 from jsonschema import validate
+from os import system
 
 def convert(ui):
 	with open(ui.getSrcFullFileName()) as dataFile:
@@ -82,17 +83,17 @@ def convert(ui):
 	MIDI.writeFile(outfile)
 	outfile.close()
 	#converting .mid to wav file
-	converMidToWav(compositionName);
+	#converMidToWav(compositionName);
 	#deleting mid file
-	delFile(compositionName+".mid")
+	#delFile(compositionName+".mid")
 	ui.setSucessMsg("File Successfully Converted")
-	return compositionName+".wav"
+	return compositionName + ".mid"
 
 def converMidToWav(mid_filename):
-	os.system("timidity -Ow -o "+mid_filename+".wav "+mid_filename+".mid")
+	system("timidity -Ow -o " + mid_filename + ".wav " + mid_filename + ".mid")
 
 def delFile(filename):
-os.system("rm "+filename)
+	system("rm " + filename)
 
 if __name__ == '__main__':
 	ui=UiWrapper();
