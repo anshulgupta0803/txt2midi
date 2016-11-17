@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3.5 -W ignore
 
 from setuptools import setup, find_packages
 

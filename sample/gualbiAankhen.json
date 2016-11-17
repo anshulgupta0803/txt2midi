@@ -1,0 +1,19 @@
+{
+	"tempo": 240,
+	"tracks": [
+		{
+			"instrument": "Acoustic Grand Piano",
+			"loop": 22,
+			"baseOffset": "S",
+			"volume": 100,
+			"notes": "S G R M"
+		},
+		{
+			"instrument": "Violin",
+			"loop": 1,
+			"volume": 127,
+			"baseOffset": "S",
+			"notes": "G~ G S'~~~ S' N S' R' N~~ N D N S' D~~ D d D N~~ - G G~ G S'~~~ S' N S' R' N~~ N D N S' D~~ D d D N~~ - G M D G~~ G~ M D M~ M~ P D N D S' N D P M P G~ - N S' R' G'~~ (M'G') (M'G') (R'S') N S' R'~ G'~ (R'G'R') (S'N) D N S'~ R' (S'R'S') (ND) d D N~"
+		}
+	]
+}

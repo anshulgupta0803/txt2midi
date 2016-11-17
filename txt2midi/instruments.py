@@ -1,5 +1,3 @@
-#!/usr/bin/python3.5
-
 instruments = {
 	"Acoustic Grand Piano": 0,
 	"Bright Acoustic Piano": 1,

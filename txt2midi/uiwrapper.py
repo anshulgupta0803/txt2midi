@@ -1,5 +1,3 @@
-#!/usr/bin/python3.5
-
 from txt2midi.ui import UiApplication;
 import tkinter as tk;
 

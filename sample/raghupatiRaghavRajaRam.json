@@ -1,0 +1,12 @@
+{
+	"tempo": 240,
+	"tracks": [
+		{
+			"instrument": "Acoustic Grand Piano",
+			"loop": 1,
+			"volume": 127,
+			"baseOffset": "S",
+			"notes": "P. S S S S R (SN.) D. N. R (RM) (GM) R g~ R S S (n.D.) D. (gR) R S S~ (SG) G G (GR) S (RG) (RG) M~ R (RM) P (dP) M g g R S~"
+		}
+	]
+}

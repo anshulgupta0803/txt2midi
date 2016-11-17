@@ -1,4 +1,4 @@
-#!/usr/bin/python3.5
+#!/usr/bin/python3.5 -W ignore
 
 from txt2midi.uiwrapper import *
 from midiutil.MidiFile import MIDIFile
@@ -66,7 +66,7 @@ def convert(ui):
 
 		try:
 			track.parse(data["tracks"][i]["notes"], baseOffset)
-		except ValueError as e:
+		except Exception as e:
 			ui.setErrorMsg(str(e))
 			return None
 

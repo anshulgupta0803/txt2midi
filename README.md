@@ -14,19 +14,20 @@ This tool depends on
  - pygame
 	 - Install it using
 
-	 `sudo pip3 install pygame`
+	 `pip3 install pygame`
  - tkinter
 	 - On debain based systems, install it using
 
-	`sudo apt-get install python3-tk`
+	`apt-get install python3-tk`
 
 Install the tool using
 
-	sudo python3 setup.py install
+	python3 setup.py install
 
 This will install the tool in `/usr/local/bin` and you can run it using
 
 	txt-midi
+
 
 ## Input File Format
 The `.json` file has 2 parameters:
@@ -107,10 +108,18 @@ To play **S** for two beats, **S.** for three beats and **S''** for four beats,
 	S~ S.~~ S''~~~
 
 To give a pause, use `-`
+
 For example:
+
 To give a pause between **S** and **R**
 
 	S - R
+
+To group notes together, encapsulate them in parenthesis.
+
+For example:
+
+	(S'NDP)
 
 ----
 
@@ -128,7 +137,7 @@ To give a pause between **S** and **R**
 			"volume": 100,
 			"loop": 2,
 			"baseOffset": "D.",
-			"notes": "S R G"
+			"notes": "S P D"
 		}
 	]
 }

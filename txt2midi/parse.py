@@ -1,5 +1,3 @@
-#!/usr/bin/python3.5
-
 from txt2midi.pitch import Pitch
 from re import search as reSearch
 
@@ -29,7 +27,7 @@ class Parser():
 		symbols = symbols.split()
 		for symbol in symbols:
 			try:
-				regex="^[SrRgGmMPdDnN]\\.*~*$|^[SrRgGmMPdDnN]'*~*$|^-$"
+				regex="^[SrRgGmMPdDnN](?:\\.*|'*)~*$|^\((?:[SrRgGmMPdDnN](?:\\.*|'*))+\)$|^-$"
 				if reSearch(regex, symbol) == None:
 					raise ValueError("Syntax Error: " + symbol)
 					return
@@ -37,17 +35,31 @@ class Parser():
 				length = len(symbol)
 				note = symbol[0]
 
-				offset = 0
-				# reSearch object's span() function returns the start and end position of the pattern
-				offsetPattern = reSearch("\\.+", symbol)
-				if offsetPattern != None:
-					# offset is negative for Low
-					offset = offsetPattern.span()[0] - offsetPattern.span()[1]
+				if reSearch("^\((?:[SrRgGmMPdDnN](?:\\.*|'*))+\)$", symbol) != None:
+					tempoFactor = 0
+					for i in range(1, length - 1):
+						if reSearch("[SrRgGmMPdDnN]", symbol[i]) != None:
+							tempoFactor += 1
 
-				offsetPattern = reSearch("'+", symbol)
-				if offsetPattern != None:
-					# offset is positive for High
-					offset = offsetPattern.span()[1] - offsetPattern.span()[0]
+					currentSymbol = symbol[1]
+					for i in range(2, length):
+						if reSearch("[SrRgGmMPdDnN]", symbol[i]) != None or symbol[i] == ')':
+							offset = self.getOffset(currentSymbol)
+							try:
+								val = pitch.getPitch(currentSymbol[0], offset) + self.baseOffset
+							except Exception as e:
+								raise ValueError("Syntax Error: " + str(e))
+								return
+
+							notes.append(val)
+							tempoFactors.append(2 / tempoFactor)
+							currentSymbol = symbol[i]
+						else:
+							currentSymbol += symbol[i]
+
+					continue
+
+				offset = self.getOffset(symbol)
 
 				tempoFactor = 1
 				tempoPattern = reSearch("~+", symbol)
@@ -63,11 +75,27 @@ class Parser():
 					val = pitch.getPitch(note, offset) + self.baseOffset
 				except Exception as e:
 					raise ValueError("Syntax Error: " + symbol)
+					return
 
 				notes.append(val)
 				tempoFactors.append(tempoFactor)
 			except Exception as e:
-				raise ValueError("Syntax Error: " + symbol)
+				raise ValueError("Syntax Error: " + str(e))
 				return
 
 		return notes, tempoFactors
+
+	def getOffset(self, symbol):
+		offset = 0
+		# reSearch object's span() function returns the start and end position of the pattern
+		offsetPattern = reSearch("\\.+", symbol)
+		if offsetPattern != None:
+			# offset is negative for Low
+			offset = offsetPattern.span()[0] - offsetPattern.span()[1]
+
+		offsetPattern = reSearch("'+", symbol)
+		if offsetPattern != None:
+			# offset is positive for High
+			offset = offsetPattern.span()[1] - offsetPattern.span()[0]
+
+		return offset

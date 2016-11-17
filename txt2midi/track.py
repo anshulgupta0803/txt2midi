@@ -1,5 +1,3 @@
-#!/usr/bin/python3.5
-
 from txt2midi.parse import Parser
 
 class Track():

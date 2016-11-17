@@ -1,5 +1,3 @@
-#!/usr/bin/python3.5
-
 import tkinter as tk
 import pygame
 import time
@@ -294,7 +292,7 @@ class UiApplication(tk.Frame):
 	def onClickConvert(self):
 		if(self.st_btn_convert_funhandler!=None):
 			wavefile=self.st_btn_convert_funhandler();
-			if(wavefile!=None or wavefile!=''):
+			if(wavefile!=None and wavefile!=''):
 				self.intiWaveSound(wavefile);
 				self.pan_status.btn_play["text"] = u'\u25B6';
 
